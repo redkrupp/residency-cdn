@@ -1,7 +1,13 @@
 export default {
   async fetch(request, env) {
+    // Get the origin from the request
+    const origin = request.headers.get('Origin')
+    
+    // Check if origin matches medresidency.com or its subdomains
+    const isAllowedOrigin = origin && /^https?:\/\/(?:[a-z0-9-]+\.)*medresidency\.com(?::\d+)?$/i.test(origin)
+    
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Origin': isAllowedOrigin ? origin : 'null',
       'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     }
@@ -54,7 +60,7 @@ export default {
       headers.set('Content-Type', object.httpMetadata.contentType || 'image/jpeg')
       
       // Ensure CORS headers are added to your response
-      headers.set('Access-Control-Allow-Origin', '*')
+      headers.set('Access-Control-Allow-Origin', isAllowedOrigin ? origin : 'null')
 
       return new Response(object.body, {
         headers,
