@@ -1,5 +1,15 @@
 export default {
   async fetch(request, env) {
+    const corsHeaders = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    }
+
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { headers: corsHeaders })
+    }
+
     try {
       // Basic auth check
       if (env.REQUIRE_AUTH) {
@@ -42,6 +52,9 @@ export default {
       const headers = new Headers()
       headers.set('Cache-Control', 'public, max-age=31536000')
       headers.set('Content-Type', object.httpMetadata.contentType || 'image/jpeg')
+      
+      // Ensure CORS headers are added to your response
+      headers.set('Access-Control-Allow-Origin', '*')
 
       return new Response(object.body, {
         headers,
